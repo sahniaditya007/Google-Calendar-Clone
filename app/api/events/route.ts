@@ -31,8 +31,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(events)
   } catch (error) {
     console.error('Error fetching events:', error)
+    const message = process.env.NODE_ENV === 'production' ? 'Failed to fetch events' : (error instanceof Error ? error.message : String(error))
     return NextResponse.json(
-      { error: 'Failed to fetch events' },
+      { error: message },
       { status: 500 }
     )
   }
@@ -74,8 +75,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(event, { status: 201 })
   } catch (error) {
     console.error('Error creating event:', error)
+    const message = process.env.NODE_ENV === 'production' ? 'Failed to create event' : (error instanceof Error ? error.message : String(error))
     return NextResponse.json(
-      { error: 'Failed to create event' },
+      { error: message },
       { status: 500 }
     )
   }

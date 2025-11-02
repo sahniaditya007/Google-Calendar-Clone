@@ -95,7 +95,9 @@ export default function EventModal({
       onClose()
     } catch (error) {
       console.error('Error saving event:', error)
-      alert('Failed to save event')
+      // Show error message when available to aid debugging (non-production)
+      const message = error instanceof Error ? error.message : String(error)
+      alert(message || 'Failed to save event')
     } finally {
       setIsSaving(false)
     }

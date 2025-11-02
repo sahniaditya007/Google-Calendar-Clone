@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  // For production on Vercel use a hosted Postgres and set DATABASE_URL in the environment
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Event {

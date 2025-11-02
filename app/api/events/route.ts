@@ -29,8 +29,15 @@ export async function GET(request: NextRequest) {
     })
 
     return NextResponse.json(events)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching events:', error)
+    // Handle Prisma connection errors
+    if (error.code === 'P1001' || error.code === 'P1002') {
+      return NextResponse.json(
+        { error: 'Database connection failed. Please check your DATABASE_URL.' },
+        { status: 503 }
+      )
+    }
     const message = process.env.NODE_ENV === 'production' ? 'Failed to fetch events' : (error instanceof Error ? error.message : String(error))
     return NextResponse.json(
       { error: message },
@@ -73,8 +80,22 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(event, { status: 201 })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating event:', error)
+    // Handle Prisma connection errors
+    if (error.code === 'P1001' || error.code === 'P1002') {
+      return NextResponse.json(
+        { error: 'Database connection failed. Please check your DATABASE_URL.' },
+        { status: 503 }
+      )
+    }
+    // Handle validation errors
+    if (error.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'A record with this information already exists' },
+        { status: 409 }
+      )
+    }
     const message = process.env.NODE_ENV === 'production' ? 'Failed to create event' : (error instanceof Error ? error.message : String(error))
     return NextResponse.json(
       { error: message },

@@ -29,9 +29,18 @@ export function getDaysInMonth(date: Date): Date[] {
   const days: Date[] = []
   
   // Add padding days from previous month
+  // Calculate how many days we need to fill the first week
+  // If startDay is 0 (Sunday), no padding needed
+  // If startDay is 1 (Monday), we need 1 day (Sunday)
+  // If startDay is 2 (Tuesday), we need 2 days (Sunday, Monday)
+  // We build them in reverse order, then reverse the array to get chronological order
+  const paddingDays: Date[] = []
   for (let i = 0; i < startDay; i++) {
-    days.push(new Date(year, month, 1 - startDay + i))
+    // day 1 - startDay + i: for startDay=2, gives -1, 0 (Sunday, Monday before day 1)
+    const paddingDate = new Date(year, month, 1 - startDay + i)
+    paddingDays.push(paddingDate)
   }
+  days.push(...paddingDays)
   
   // Add all days of current month
   for (let day = 1; day <= lastDay.getDate(); day++) {

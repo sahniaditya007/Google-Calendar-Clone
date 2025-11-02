@@ -85,7 +85,8 @@ export default function Home() {
       }
 
       const newEvent = await response.json()
-      setEvents([...events, newEvent])
+      // Refresh events to get the latest data from the server
+      await fetchEvents()
     } catch (error) {
       console.error('Error creating event:', error)
       throw error
@@ -108,8 +109,8 @@ export default function Home() {
         throw new Error(error.error || 'Failed to update event')
       }
 
-      const updatedEvent = await response.json()
-      setEvents(events.map((e) => (e.id === id ? updatedEvent : e)))
+      // Refresh events to get the latest data from the server
+      await fetchEvents()
     } catch (error) {
       console.error('Error updating event:', error)
       throw error
@@ -126,7 +127,8 @@ export default function Home() {
         throw new Error('Failed to delete event')
       }
 
-      setEvents(events.filter((e) => e.id !== id))
+      // Refresh events to get the latest data from the server
+      await fetchEvents()
     } catch (error) {
       console.error('Error deleting event:', error)
       throw error

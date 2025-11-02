@@ -66,8 +66,17 @@ export default function EventModal({
     setIsSaving(true)
 
     try {
-      const startDateTime = new Date(`${startDate}T${startTime}`)
-      const endDateTime = new Date(`${endDate}T${endTime}`)
+      // Create dates in local timezone, then convert to ISO string
+      // This ensures the date/time entered by the user is preserved correctly
+      const startDateTime = new Date(`${startDate}T${startTime}:00`)
+      const endDateTime = new Date(`${endDate}T${endTime}:00`)
+
+      // Validate dates are valid
+      if (isNaN(startDateTime.getTime()) || isNaN(endDateTime.getTime())) {
+        alert('Please enter valid dates and times')
+        setIsSaving(false)
+        return
+      }
 
       if (endDateTime <= startDateTime) {
         alert('End time must be after start time')

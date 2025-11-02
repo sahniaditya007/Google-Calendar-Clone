@@ -54,7 +54,14 @@ export default function Home() {
         `/api/events?start=${startDate.toISOString()}&end=${endDate.toISOString()}`
       )
       const data = await response.json()
-      setEvents(data)
+
+      // If the API returned an error object, avoid setting events to a non-iterable value
+      if (!response.ok) {
+        console.error('API error fetching events:', data)
+        setEvents([])
+      } else {
+        setEvents(Array.isArray(data) ? data : [])
+      }
     } catch (error) {
       console.error('Error fetching events:', error)
     } finally {

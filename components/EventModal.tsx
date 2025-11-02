@@ -104,9 +104,30 @@ export default function EventModal({
       onClose()
     } catch (error) {
       console.error('Error saving event:', error)
-      // Show error message when available to aid debugging (non-production)
-      const message = error instanceof Error ? error.message : String(error)
-      alert(message || 'Failed to save event')
+      
+      // Extract user-friendly error message
+      let errorMessage = 'Failed to save event'
+      
+      if (error instanceof Error) {
+        errorMessage = error.message
+      } else if (typeof error === 'string') {
+        errorMessage = error
+      }
+      
+      // Provide more specific error messages for common cases
+      if (errorMessage.includes('Database connection failed')) {
+        errorMessage = 'Unable to connect to the database. Please check your connection and try again.'
+      } else if (errorMessage.includes('already exists')) {
+        errorMessage = 'An event with this information already exists. Please modify and try again.'
+      } else if (errorMessage.includes('not found')) {
+        errorMessage = 'Event not found. It may have been deleted. Please refresh and try again.'
+      } else if (errorMessage.includes('End time must be after start time')) {
+        errorMessage = 'The end time must be after the start time. Please adjust your times.'
+      } else if (!errorMessage || errorMessage === 'Failed to save event' || errorMessage === 'Failed to create event' || errorMessage === 'Failed to update event') {
+        errorMessage = 'Unable to save the event. Please check your internet connection and try again. If the problem persists, the event details may be invalid.'
+      }
+      
+      alert(errorMessage)
     } finally {
       setIsSaving(false)
     }
@@ -121,7 +142,21 @@ export default function EventModal({
         onClose()
       } catch (error) {
         console.error('Error deleting event:', error)
-        alert('Failed to delete event')
+        
+        // Extract user-friendly error message
+        let errorMessage = 'Unable to delete the event. Please check your internet connection and try again.'
+        
+        if (error instanceof Error) {
+          if (error.message.includes('not found')) {
+            errorMessage = 'Event not found. It may have already been deleted.'
+          } else if (error.message.includes('Database connection failed')) {
+            errorMessage = 'Unable to connect to the database. Please check your connection and try again.'
+          } else if (error.message) {
+            errorMessage = error.message
+          }
+        }
+        
+        alert(errorMessage)
       }
     }
   }
